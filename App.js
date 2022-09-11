@@ -1,44 +1,57 @@
 //Hacer un sistema de elo
-//la administracion de la data de en donde mandar las cosas seria un array bidimensional, 0,1,2 y 0,1,2 con un state y permiiria hacer cosas como el check de la win mas facil, para esto usa useState
+//Con un switch hacer que 1 = left o top, 2 = middle y 3 = right o bottom para no mostrar cosas
+//como row 1 al que gano
 //como x y o usar padorus o algo asi
-// hay docs de lo de {condicion && todo} en lo de reacth, pero es como un if.
+//{condicion && ToDo}
+//state gameover para desactivar todo cuando alguien gane o alla empate, por lo que 
+//en ese moemtno solo se podria reiniciar.
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from "react";
-import { StyleSheet, Text, View, ImageBackground, Pressable, Alert } from 'react-native';
+import React, {useEffect, useState} from "react";
+import { StyleSheet, Text, View, ImageBackground, Alert } from 'react-native';
+import bg from "./assets/bg.jpeg";
+import Cell from "./src/Cell"
+import {empty} from "./src/MapStuff"
 //Presable es un View pero con una propiedad onPress, o sea que se pueden reemplazar View con Pressable
 //Por ejemplo el de cell originalmente eran View,
-import bg from "./assets/bg.jpeg";
-import Circle from './src/Circle';
-import Cross from "./src/Cross";
-
-const empty = [ //crea el array bidireccional para el posicionamiento en el mapa
-    ['', '', '',],
-    ['', '', '',],
-    ['', '', '',],
-];
-
 
 export default function App() {
   const [gameMap, setMap] = useState(empty);
 
-  //No se usa posicionamienot absoluto ya que haria Views vacios cuando no hay nada en la casilla 
+  var [gameState, setState] = useState("inGame");
 
-const [CurrentTurn, setCurrentTurn] = useState("x"); //es un array bidimensional creo
+  const [CurrentTurn, setCurrentTurn] = useState("x"); //es un array bidimensional creo
 
-const Touch = (Column, Row) => { //declara una funcion 
-  console.warn("Zone pressed: ",Column, Row);
-  if(gameMap[Column][Row] !== ""){
-    Alert.alert("Sorry but you can't cheat here!"); //Es mas un check que otra cosa
-    return;
+  useEffect(() => {
+    if(CurrentTurn === "o")
+      botTurn();
+  }, [CurrentTurn]);
+  //useEffect ejecuta CALLBACK si es que DEPENDENCIES cambio desde la ultima llamada 
+
+  const Touch = (Column, Row) => { //declara una funcion 
+    if(gameState === "inGame"){
+      console.warn("Zone pressed: ",Column, Row);
+
+      if(gameMap[Column][Row] !== ""){
+        Alert.alert("Sorry but you can't cheat here!"); //Es mas un check que otra cosa
+        return;
+      }
+
+      setMap((existingMap) => {
+      const updatedMap = [...existingMap];
+      updatedMap [Column][Row] = CurrentTurn;
+      return updatedMap;
+    }) 
+
+    winnerCheck();
+    setCurrentTurn(CurrentTurn === "x" ? "o" : "x");//Una conditional expression de C para que el codigo sea mas compacto
   }
-  setMap((existingMap) => {
-    const updatedMap = [...existingMap];
-    updatedMap [Column][Row] = CurrentTurn;
-    return updatedMap;
-  }) //espera un objeto o una funcion, por lo que arrow function go brr 
+  else{
+    Alert.alert("The game is already Over!!!", 
+    "", 
+    [{text: "Play again!", onPress:() => reset()},{text: "Yeah I know!", style: "cancel"}], 
+    {cancelable: true});
 
-  winnerCheck();
-  setCurrentTurn(CurrentTurn === "x" ? "o" : "x");//Una conditional expression de C para que el codigo sea mas compacto
+  }
 }
 
 const winnerCheck = () => {
@@ -94,7 +107,6 @@ const winnerCheck = () => {
   if(XoblWin || OoblWin)
     winner("Oblicuous right to left");
   
-
   tieCheck();
 }
 
@@ -123,6 +135,8 @@ const winner = (where) => {
     "In "+where, 
     [{text: "Play again!", onPress:() => reset()},{text: "Ok...", style: "cancel"}], 
     {cancelable: true});
+  
+  setState("gameOver");
 }
 
 const reset = () => {
@@ -132,22 +146,38 @@ const reset = () => {
     ['', '', '',],
   ]);
   setCurrentTurn("x");
+  setState("inGame");
 }
+
+//Bot
+const botTurn = () => {
+  //Collect all possible options
+
+  //Choose the best one 
+  
+  Touch(1,2);//Just a place-holder, first lets think about how to call it
+}
+
 
   return (
     <View style={styles.container}>
       <ImageBackground source={bg} style={styles.bg} ImageBackground="contain">
 
+        <Text style={{
+            position: 'absolute',
+            fontSize: 26,
+            color: "white",
+            top: 50,
+          }          
+        }>
+          Current turn: {CurrentTurn}
+        </Text>
         <View style={styles.map}>
           {gameMap.map((row, rowIndex) => 
             <View style={styles.row}>
-              {row.map((cell, columIndex) => (<Pressable onPress={() => Touch(rowIndex, columIndex)}style={styles.cell}> 
-
-                {cell === "o" && <Circle></Circle>} 
-
-                {cell === "x" && <Cross></Cross>}
-
-              </Pressable>))}
+              {row.map((cell, columnIndex) => (
+                <Cell cell={cell} yIndex={columnIndex} xIndex={rowIndex} onPress={Touch} ></Cell>
+              ))}
             </View>
             )}
         </View>
@@ -157,19 +187,6 @@ const reset = () => {
   ); 
 }
 
-{/*con () lo devuele, con {} es un simble bloque de codigo
-          Min 49:42, hay que crear un view para rows y otro para las columnas para evitar que sean 9 uno arriba de otro.
-          usa uno que es rows y otro que es cell*/}
-
-          {/*<View style={styles.circle}>
-            <View style={styles.innercircle}></View>
-          </View>
-        
-
-  {/*resizeMode en ImageBackground maneja como se expande LA IMAGEN, contain es solo la imagen sin importar que queden espacios 
-  //y cover cubre TODO, escala la imagen pero revienta el centro, por eso esta en CONTAIN con el bg del mismo color que la imagen
-  //View no tiene primitivas pero si estilos para modificar cosas
-//El view adentro del otro es para tapar el de arriba y que sea como una dona*/}
 const styles = StyleSheet.create({
   container:{
     flex: 1,
@@ -195,12 +212,6 @@ const styles = StyleSheet.create({
         translateX: 2.2,//translate mueve
       }
     ]
-  },
-
-  cell:{
-    width: 100,
-    height: 125,
-    flex: 1,               //va a usar el mismo espacio para cada una
   },
 
   row:{
