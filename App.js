@@ -5,31 +5,65 @@
 //{condicion && ToDo}
 //state gameover para desactivar todo cuando alguien gane o alla empate, por lo que 
 //en ese moemtno solo se podria reiniciar.
+//Un delay en el bot y capaz mostrar una animacion o algo
+//hacer modos coxn el mapa mas grande
+import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from "react";
 import { StyleSheet, Text, View, ImageBackground, Alert } from 'react-native';
+import {NavigationContainer} from '@react-navigation/native';
 import bg from "./assets/bg.jpeg";
-import Cell from "./src/Cell"
-import {empty} from "./src/MapStuff"
-//Presable es un View pero con una propiedad onPress, o sea que se pueden reemplazar View con Pressable
-//Por ejemplo el de cell originalmente eran View,
+import Cell from "./src/GeneralAssets/Cell"
 
 export default function App() {
-  const [gameMap, setMap] = useState(empty);
+
+  const map = [gameMap, setMap] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ]);
+
+  const reset = () => {
+    setMap([
+      ['', '', '',],
+      ['', '', '',],
+      ['', '', '',],
+    ]);
+    setCurrentTurn("x");
+}
 
   var [gameState, setState] = useState("inGame");
-
   const [CurrentTurn, setCurrentTurn] = useState("x"); //es un array bidimensional creo
+  const [GameMode, setGameMode] = useState("LOCAL");
 
   useEffect(() => {
-    if(CurrentTurn === "o")
+    if(CurrentTurn === "o" && gameState === "inGame" && GameMode !== "LOCAL")
       botTurn();
   }, [CurrentTurn]);
   //useEffect ejecuta CALLBACK si es que DEPENDENCIES cambio desde la ultima llamada 
 
-  const Touch = (Column, Row) => { //declara una funcion 
+  useEffect(() => {
+      let won = checkWinner(gameMap);
+
+      if(won){
+        winner(won);
+        setState("gameOver")
+        won = 0;
+      }
+      else
+        tieCheck();
+  }, [gameMap]);
+
+  useEffect(() => {
+    reset();
+  }, [GameMode])
+
+  useEffect(() =>{
+    console.log("Game state : " + gameState);
+  })
+
+  const mapTouch = (Column, Row) => { 
     if(gameState === "inGame"){
-      console.warn("Zone pressed: ",Column, Row);
 
       if(gameMap[Column][Row] !== ""){
         Alert.alert("Sorry but you can't cheat here!"); //Es mas un check que otra cosa
@@ -37,82 +71,33 @@ export default function App() {
       }
 
       setMap((existingMap) => {
-      const updatedMap = [...existingMap];
-      updatedMap [Column][Row] = CurrentTurn;
-      return updatedMap;
-    }) 
+        const updatedMap = [...existingMap];
+        updatedMap [Column][Row] = CurrentTurn;
+        return updatedMap;
+      }) 
 
-    winnerCheck();
     setCurrentTurn(CurrentTurn === "x" ? "o" : "x");//Una conditional expression de C para que el codigo sea mas compacto
   }
-  else{
-    Alert.alert("The game is already Over!!!", 
-    "", 
-    [{text: "Play again!", onPress:() => reset()},{text: "Yeah I know!", style: "cancel"}], 
-    {cancelable: true});
-
-  }
+  else
+    overWarn();
 }
 
-const winnerCheck = () => {
-  //Check rows
-  for(let i = 0;i<=2; i++){
-    const Xwin = gameMap[i].every((cell) => cell === "x");
-    const Owin = gameMap[i].every((cell) => cell === "o");
-
-    if(Xwin || Owin)
-      winner("Row " + (i+1));
-  }
-  //Check columns
-  for(let col = 0; col<=2; col++){
-    const Xwin = true;
-    const Owin = true;
-
-    for(let row = 0; row<=2; row++){
-      if(gameMap[row][col] !== "x")
-        Xwin = false;
-      if(gameMap[row][col] !== "o")
-        Owin = false;
-    } 
-    
-    if(Xwin || Owin)
-      winner("Column " + (col+1));
-  }
-
-  //Check diagonals
-  //Left to righ
-  let i = 0;
-  let XoblWin = true;
-  let OoblWin = true;
-
-  for(; i<=2; i++){
-    if(gameMap[i][i] !== "x")
-      XoblWin = false;
-    if(gameMap[i][i] !== "o")
-      OoblWin = false;
-  }
-  if(XoblWin || OoblWin)
-    winner("Oblicuous left to right");
-
-  //Right to left
-  XoblWin = true;
-  OoblWin = true;
-
-  for(i=0; i<=2; i++){
-    if(gameMap[i][2-i] !== "x")
-      XoblWin = false;
-    if(gameMap[i][2-i] !== "o")
-      OoblWin = false;
-  }
-  if(XoblWin || OoblWin)
-    winner("Oblicuous right to left");
-  
-  tieCheck();
+const overWarn = () => {
+  Alert.alert("The game is already Over!!!", 
+  "", 
+  [{text: "Play again!", onPress:() => {reset(); setState("inGame");}},{text: "Yeah I know!", style: "cancel"}], 
+  {cancelable: true});
 }
 
-var tie = true;
+const copyArray = (from) => {
+  const copy = from.map((arg) => {
+    return arg.slice();
+  });
+  return copy;
+}
 
 const tieCheck = () => { //Checkea si esta todo ocupado, se ejecuta despues de winner o en winner, por lo que
+  let tie = true;
 
   for(let i=0; i<=2; i++)
     if(tie === true)
@@ -127,67 +112,178 @@ const Tie = () => {
     [{text: "Play again!", onPress:() => reset()},{text: "Ok...", style: "cancel"}], 
     {cancelable: true});
 }
-
-//Crear un boton para resetear cuando aparezca despues de apretar Ok... en winner y tie
-const winner = (where) => {
-  Alert.alert(
-    "The winner is "+CurrentTurn.toUpperCase(), 
-    "In "+where, 
-    [{text: "Play again!", onPress:() => reset()},{text: "Ok...", style: "cancel"}], 
-    {cancelable: true});
-  
-  setState("gameOver");
-}
-
-const reset = () => {
-  setMap([
-    ['', '', '',],
-    ['', '', '',],
-    ['', '', '',],
-  ]);
-  setCurrentTurn("x");
-  setState("inGame");
-}
-
 //Bot
 const botTurn = () => {
   //Collect all possible options
+  const possiblePostitions = [];
+  gameMap.forEach((row, rowIndex) =>
+    row.forEach((cell, columnIndex) =>{
+      if(cell==="")
+        possiblePostitions.push({row: rowIndex, col: columnIndex});
+    })
+  )
 
-  //Choose the best one 
-  
-  Touch(1,2);//Just a place-holder, first lets think about how to call it
+  let choosePosition;
+
+  switch(GameMode){
+    case "BOT_EASY":
+      choosePosition = possiblePostitions[Math.floor(Math.random() * possiblePostitions.length)];
+      break;
+    case "BOT_MEDIUM":
+      //Check if the bot can win 
+      possiblePostitions.forEach((Possibility)=> {
+      const mapCopy = copyArray(gameMap);
+
+      mapCopy[Possibility.row][Possibility.col] = "o";
+    
+      if(checkWinner(mapCopy) === "o")
+        choosePosition = Possibility;
+      })
+
+      //Check if the opponent can win taking a possible position.
+      if(!choosePosition)
+        possiblePostitions.forEach((Possibility)=> {
+
+          const mapCopy = copyArray(gameMap);
+
+          mapCopy[Possibility.row][Possibility.col] = "x";
+    
+          if(checkWinner(mapCopy) === "x")
+            choosePosition = Possibility;
+          
+        })
+
+      if(!choosePosition)
+        choosePosition = possiblePostitions[Math.floor(Math.random() * possiblePostitions.length)];
+      break;
+  }
+
+  if(choosePosition)
+    mapTouch(choosePosition.row,choosePosition.col);
 }
 
+const checkWinner = (checkMap) => {
+  //Check rws
+  for(let i = 0;i<=2; i++){
+    const Xwin = checkMap[i].every((cell) => cell === "x");
+    const Owin = checkMap[i].every((cell) => cell === "o");
+
+    if(Xwin)
+      return "x";
+    if(Owin)
+      return "o";
+  }
+  //Check columns
+  for(let col = 0; col<=2; col++){
+    const Xwin = true;
+    const Owin = true;
+
+    for(let row = 0; row<=2; row++){
+      if(checkMap[row][col] !== "x")
+        Xwin = false;
+      if(checkMap[row][col] !== "o")
+        Owin = false;
+    } 
+  
+    if(Xwin)
+      return "x";
+    if(Owin)
+      return "o";
+  }
+
+  //Check diagonals
+  //Left to righ
+  let i = 0;
+  let XoblWin = true;
+  let OoblWin = true;
+
+  for(; i<=2; i++){
+    if(checkMap[i][i] !== "x")
+      XoblWin = false;
+    if(checkMap[i][i] !== "o")
+      OoblWin = false;
+  }
+  if(XoblWin)
+    return "x";
+  if(OoblWin)
+    return "o";
+
+  //Right to left
+  XoblWin = true;
+  OoblWin = true;
+
+  for(i=0; i<=2; i++){
+    if(checkMap[i][2-i] !== "x")
+      XoblWin = false;
+    if(checkMap[i][2-i] !== "o")
+      OoblWin = false;
+  }
+
+  if(XoblWin)
+    return "x";
+  if(OoblWin)
+    return "o";  
+}
+
+//Crear un boton para resetear cuando aparezca despues de apretar Ok... en winner y tie
+  const winner = (who) => { 
+    console.log("winning");
+    Alert.alert(
+     "The winner is "+who, 
+      "Good job!!!", 
+      [{text: "Play again!", onPress:() => {reset(); setState("inGame");}},{text: "Ok...", style: "cancel"}], 
+      {cancelable: true}); 
+}
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={bg} style={styles.bg} ImageBackground="contain">
+    <NavigationContainer>
+      <View style={styles.container}>
+        <ImageBackground source={bg} style={styles.bg} ImageBackground="contain">
 
-        <Text style={{
-            position: 'absolute',
-            fontSize: 26,
-            color: "white",
-            top: 50,
-          }          
-        }>
-          Current turn: {CurrentTurn}
-        </Text>
-        <View style={styles.map}>
-          {gameMap.map((row, rowIndex) => 
-            <View style={styles.row}>
-              {row.map((cell, columnIndex) => (
-                <Cell cell={cell} yIndex={columnIndex} xIndex={rowIndex} onPress={Touch} ></Cell>
-              ))}
-            </View>
-            )}
-        </View>
-      </ImageBackground>
-    <StatusBar style="auto" />
-  </View>
+          <Text style={{
+              position: 'absolute',
+              fontSize: 26,
+              color: "white",
+              top: 50,
+            }          
+          }>
+            Current turn: {CurrentTurn}
+          </Text>
+          <View style={styles.map}>
+            {gameMap.map((row, rowIndex) => 
+              <View style={styles.row}>
+                {row.map((cell, columnIndex) => (
+                  <Cell cell={cell} yIndex={columnIndex} xIndex={rowIndex} onPress={mapTouch} ></Cell>
+                ))}
+             </View>
+              )}
+          </View>
+          <View style={styles.buttons}>
+            <Text onPress={() => setGameMode("LOCAL")} style={[styles.button, {backgroundColor: GameMode === "LOCAL" ? "purple" : "blue"}]}>Local</Text>
+            <Text onPress={() => setGameMode("BOT_EASY")} style={[styles.button, {backgroundColor: GameMode === "BOT_EASY" ? "purple" : "blue"}]}>Easy Bot</Text>
+            <Text onPress={() => setGameMode("BOT_MEDIUM")} style={[styles.button, {backgroundColor: GameMode === "BOT_MEDIUM" ? "purple" : "blue"}]}>Medium Bot</Text>
+          </View>
+       </ImageBackground>
+      <StatusBar style="auto" />
+    </View>
+  </NavigationContainer>
   ); 
 }
 
 const styles = StyleSheet.create({
+  buttons:{
+    position: 'absolute',
+    bottom: 100,
+    flexDirection: 'row',
+  },
+  button:{
+    fontSize: 24,
+    color: "white",
+    margin: 20,
+    borderRadius: 10,
+    padding: 10,
+  },
+
   container:{
     flex: 1,
     backgroundColor: '#242d34',
@@ -209,7 +305,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1/1,
     transform : [
       {
-        translateX: 2.2,//translate mueve
+        translateX: 2.2,//translat
       }
     ]
   },
