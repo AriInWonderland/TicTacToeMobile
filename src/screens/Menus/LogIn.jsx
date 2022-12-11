@@ -1,36 +1,31 @@
 import { View, Text, StyleSheet, TextInput } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import users from '../../../Users';
-import {actualUser, changeUser} from './UserState';
+
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
     
 const LogIn = ({navigation}) => {
-    const [newUser, setState] = useState({
-        name: "",
+    const [User, setState] = useState({
+        email: "",
         passwd: "",
-        verify: "",
     });
 
     const inputHandler = (name, value) => {
-        setState({...newUser, [name]: value});
+        setState({...User, [name]: value});
     }
 
+    const auth = getAuth();
     const logIn = () => {
-        let names = [];
-        let check;
-        users.forEach((i) =>{
-            names.push(i.name);
-        })
-
-        check = names.indexOf(newUser.name);
-
-        if(check != -1 && users[check].psswd == newUser.passwd){
+        signInWithEmailAndPassword(auth, User.email, User.passwd)
+            .then((userCredential) => {
+                //Signed in!!!
+                const user = userCredential.user;
                 navigation.navigate("Logged_In");
-                changeUser(users[check].id);
-        } 
-        else if(check == -1)
-                alert("Unknown user...");
-        else
-            alert("Wrong password");
+            })
+            .catch((error) => {
+                console.error(error.code)
+                console.error(error.message)
+            });
     }
 
   return (
@@ -39,8 +34,8 @@ const LogIn = ({navigation}) => {
 
         <TextInput 
             style={styles.txtinput} 
-            placeholder="NickName"
-            onChangeText = {(value) => {inputHandler("name", value)}}
+            placeholder="Email"
+            onChangeText = {(value) => {inputHandler("email", value)}}
         /> 
         <TextInput 
             style={styles.txtinput} 

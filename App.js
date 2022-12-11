@@ -13,7 +13,6 @@ import ClassicMenu  from "./src/screens/Games/Classic/ClassicMenu";
 import Classic_Game from "./src/screens/Games/Classic/ClassicGame";
 import UserDetails  from "./src/screens/Menus/UserDetails"        ;
 import LogIn        from "./src/screens/Menus/LogIn"              ;
-import users        from './Users'                                ;
 
 const MyStack = () =>{
   return(

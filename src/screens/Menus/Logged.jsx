@@ -1,10 +1,11 @@
 import { View, Text, StyleSheet} from 'react-native'
 import React from 'react'
-import {actualUser, changeUser} from './UserState';
+
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
+
+import logOut from "../../../Users"
 
 const Logged = ({navigation}) => {
-  console.log("Logged In.");
-  console.log("Id = " + actualUser);
   return (
     <View style={styles.container}>
         
@@ -22,6 +23,10 @@ const Logged = ({navigation}) => {
 
       <Text style = {styles.button} onPress = {() => navigation.navigate("UserDetails")}>
         Account
+      </Text>
+
+      <Text style = {styles.subtitle} onPress = {() => logOut()}>
+        LogOut
       </Text>
     </View>
   )
@@ -51,6 +56,13 @@ const styles = StyleSheet.create({
     top: 300,
     width: "50%",
     borderRadius: 50, 
+  },
+  subtitle:{
+    margin: 10,
+    top: "40%",
+    fontSize: 16,
+    color: 'white',
+    textDecorationLine: 'underline',
   },
 })
 

@@ -4,9 +4,9 @@ import React, { useEffect, useState } from 'react'
 import { collection, addDoc, getDoc, getDocs} from "firebase/firestore"; 
 import db from "../../../database/firebase"
 import { async } from '@firebase/util';
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
-import {actualUser, changeUser} from './UserState';
-import users from '../../../Users';
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
 
 const Welcome = ({navigation}) => { 
 
@@ -17,8 +17,9 @@ const Welcome = ({navigation}) => {
     ]);
 
     const [newUser, setState] = useState({
-        name: "",
-        passwd: "",
+        email: "",
+        nick: "",
+        password: "",
         verify: "",
     });
 
@@ -26,55 +27,77 @@ const Welcome = ({navigation}) => {
         setState({...newUser, [name]: value});
     }
 
-    const addUser = async () => {
-        let check = false;
-
-        if(!newUser.name)
-            alert("Add nickname");
-        if(users.some((i)=>{
-            return i.name === newUser.name;
-        }))
-            alert("Other user has already taken that name.");
-
-        if(!newUser.passwd)
-            alert("Add pswd");
+    const addUser = () => {
+        console.log("Adding a user...");
+        if(!newUser.email)
+            alert("Add an email");
+        if(!newUser.nick)
+            alert("Please choose a Nickname!");
+        if(!newUser.password)
+            alert("Add a password");
         if(!newUser.verify)
-            alert("You MUST verify your psswd");
+            alert("You MUST verify your password");
 
-        newUser.passwd === newUser.verify ? check = true : alert("Please verify your password.");
+        var check;
+        newUser.password === newUser.verify ? check = true : alert("Please verify your password.");
 
-        if(newUser.name && newUser.passwd && check)
-            try{
-                await addDoc(collection(db, "users"),{
-                    name:        newUser.name,
-                    psswd:       newUser.passwd,
-                    playedGames: 0,
-                    points:      0,
-                    rank:       -1, 
-                    ONplayedGames: 0,
-                    ONpoints: 0,
-                    ONrank: -1,
-            });
-            alert("Welcome "+ newUser.name +"!!!");
-            } catch {
-                alert("Failed to create new user...");
-            }
+        if(newUser.email && newUser.nick && check){
+            console.log("All checks passed");
+                console.log("Trying to create user...");
+                const auth = getAuth();
+                console.log("Got auth...");
+                createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
+                    .then((userCredential) => {
+                        console.log("Logging in...");
+                        const user = userCredential.user;
+                        console.log("[addUser]Creating user doc...");
+                        createUserDoc();
+                        navigation.navigate("Logged_In");
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code;
+                        const errorMessage = error.message;
+                        console.log("Sorry...\nError code: "+errorCode+"\nError Message: " + errorMessage);
+                     });
+        }
     }
 
-    //console.log(users);
-    return (
+    createUserDoc = async () => {
+        console.log("[createUserDoc]Creating user doc...");
+        try{
+            const docRef = await addDoc(collection(db, "users"), {
+                NickName: newUser.nick,
+                ONplayedGames: 0,
+                ONpoints: 0,
+                ONrank: -1,
+                playedGames: 0,
+                points: 0,
+                rank: -1
+            });
+            console.log("User created.");
+        } catch (error){
+            console.error("Error creating user doc", error);
+        }
+    }
+
+   return (
         <View style={styles.container}>
             <Text style={styles.title}>Please create an account or log-in!!!</Text>
 
             <TextInput 
                 style={styles.txtinput} 
+                placeholder="Email"
+                onChangeText = {(value) => {inputHandler("email", value)}}
+            />
+            <TextInput 
+                style={styles.txtinput} 
                 placeholder="NickName"
-                onChangeText = {(value) => {inputHandler("name", value)}}
-            /> 
+                onChangeText = {(value) => {inputHandler("nick", value)}}
+            />  
             <TextInput 
                 style={styles.txtinput} 
                 placeholder="Password"
-                onChangeText={(value) => inputHandler("passwd", value)}
+                onChangeText={(value) => inputHandler("password", value)}
                 secureTextEntry ={true}
             /> 
             <TextInput 
@@ -86,7 +109,7 @@ const Welcome = ({navigation}) => {
 
             <Text style={styles.createbt} onPress = {() => addUser()}>Create!!!</Text>
             <Text style={[styles.title, styles.subtitle]}>Already have an account?</Text>
-            <Text style={styles.loginbt } onPress = {() => navigation.navigate("LogIn")  }>Log in</Text>
+            <Text style={styles.loginbt } onPress = {() => navigation.navigate("LogIn")}>Log in</Text>
 
             <Text style={styles.loginbt } onPress = {() => navigation.navigate("Ranks")}>[RankDEBUG]</Text>
             <Text style={styles.loginbt } onPress = {() => mapTest()}>[DEBUG]</Text>

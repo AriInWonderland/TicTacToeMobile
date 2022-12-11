@@ -1,21 +1,15 @@
+import { getAuth, signOut } from 'firebase/auth';
 import { Text, StyleSheet, ScrollView, View} from 'react-native';
-import users from "../../../Users"
-import { actualUser } from './UserState';
 
-const getUserIndex = (id) =>{
-    let ids = [];
-    users.forEach((i) => {
-        ids.push(i.id);
-    })
-    console.log(users);
-    return ids.indexOf(id);
-}
+import { AsyncStorage } from '@react-native-async-storage/async-storage';
+
+import {users, getUserDoc} from '../../../Users';
+
+const auth = getAuth();
+actualUser = getUserDoc(auth, users);
 
 //Es onda una carta, el fondo de esta es el avatar, si no entra todo el resto es el avatar pero blureado
 export default function Ranks({navigation}) {
-    const actualUserIndex = getUserIndex(actualUser);
-    console.log("\nActual User:");
-    console.log(users[actualUserIndex]);
     return(
     <View style={styles.container}>
             <View style={styles.listbg}>
@@ -26,21 +20,21 @@ export default function Ranks({navigation}) {
 
                 <Text style={[styles.title, {textAlign: 'center'}]}>     Offline Stats</Text>
                 <Text style={styles.title}>     Games Played:</Text>
-                <Text style={styles.subtitle}> {users[actualUserIndex].playedGames}</Text>
+                <Text style={styles.subtitle}> {actualUser.playedGames}</Text>
                 <Text style={styles.title}>     Points:</Text>
-                <Text style={styles.subtitle}> {users[actualUserIndex].points}</Text>
+                <Text style={styles.subtitle}> {actualUser.points}</Text>
                 <Text style={styles.title}>     Rank:</Text>
-                {users[actualUserIndex].rank > 0 ? <Text style={styles.subtitle}> {users[actualUserIndex].rank}</Text> : <Text style={styles.subtitle}>-</Text>}
+                {actualUser.rank > 0 ? <Text style={styles.subtitle}> {actualUser.rank}</Text> : <Text style={styles.subtitle}>-</Text>}
 
                 <View style={styles.line}></View>
 
                 <Text style={[styles.title, {textAlign: 'center'}]}>     Online Stats</Text>
                 <Text style={styles.title}>     Games Played:</Text>
-                <Text style={styles.subtitle}> {users[actualUserIndex].ONplayedGames}</Text>
+                <Text style={styles.subtitle}> {actualUser.ONplayedGames}</Text>
                 <Text style={styles.title}>     Points:</Text>
-                <Text style={styles.subtitle}> {users[actualUserIndex].ONpoints}</Text>
+                <Text style={styles.subtitle}> {actualUser.ONpoints}</Text>
                 <Text style={styles.title}>     Rank:</Text>
-                {users[actualUserIndex].ONrank > 0 ? <Text style={styles.subtitle}> {users[actualUserIndex].ONrank}</Text> : <Text style={styles.subtitle}>-</Text>}
+                {actualUser.ONrank > 0 ? <Text style={styles.subtitle}> {actualUser.ONrank}</Text> : <Text style={styles.subtitle}>-</Text>}
 
                 <View style={styles.line}></View>
             </View>

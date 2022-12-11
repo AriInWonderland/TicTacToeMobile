@@ -6,13 +6,14 @@ import users from "../../../Users"
 //Implementar binary search o algo asi para ordenar de myor a menor, onda simplemente tengo que ordenar el array.
 
 const list = [];
-/*while(users){
+/*
+while(users){
     users.forEach((i) => {
         if(i.rank > 0)
             list.push(i);
     })
-}*/
-
+}
+*/
 export default function Ranks({navigation}) {
     return(
         <ScrollView style={styles.container}>

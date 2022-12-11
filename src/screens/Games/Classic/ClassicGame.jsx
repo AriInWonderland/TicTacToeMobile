@@ -28,7 +28,6 @@ import React, {useEffect, useState} from "react";
 import { StyleSheet, Text, View, ImageBackground, Alert } from 'react-native';
 import bg from "../../../../assets/bg.jpeg";
 import Cell from "../../../GeneralAssets/Cell"
-import { actualUser } from '../../Menus/UserState';
 
 export default function Classic_Game({route, navigation}) {
   const {diff} = route.params;
@@ -51,15 +50,14 @@ export default function Classic_Game({route, navigation}) {
     ]);
     setCurrentTurn("x");
 }
-
+/*
   const add_points = (NewPoints) => {
-    /*tengo que hacer lo de firebase y eso aca, el tema es que
+    tengo que hacer lo de firebase y eso aca, el tema es que
     tambien necesito leer antes para hacer algo onda 
     points : OldPoints + NewPoints
-    */
     db.collection("users").doc(actualUser).update({points: })
   }
-
+*/
   useEffect(() => {
     if(CurrentTurn === "o" && gameState === "inGame" && GameMode !== "LOCAL")
       botTurn();
