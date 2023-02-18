@@ -6,7 +6,7 @@ import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import {users, getUserDoc} from '../../../Users';
 
 const auth = getAuth();
-actualUser = getUserDoc(auth, users);
+//actualUser = getUserDoc(auth, users);
 
 //Es onda una carta, el fondo de esta es el avatar, si no entra todo el resto es el avatar pero blureado
 export default function Ranks({navigation}) {

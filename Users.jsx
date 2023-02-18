@@ -1,20 +1,14 @@
+/*ar1.sort((a,b) => {return a.points - b.points})
+actualiza esto el ganador, todos se suscriben al resto de docs con onSnapshot
+*/
+
 import {React, useEffect, useState} from "react";
 import db from "./database/firebase";
-import { collection, addDoc, getDoc, getDocs} from "firebase/firestore"; 
+import { collection, addDoc, getDoc, getDocs, onSnapshot, doc} from "firebase/firestore"; 
 
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { onAuthStateChanged } from "firebase/auth";
-
-const logOut = () =>{
-    console.log("log out");
-    signOut(auth).then(() =>{
-        navigation.popToTop();
-    }).catch((error) =>{
-        console.log(error.code);
-        console.log(error.Message);
-        alert("An error occured while logging out...");
-    });
-}
+import { StackActions } from '@react-navigation/native';
 
 const users = [];
 
@@ -41,23 +35,23 @@ async function getUsers() {
 
     const querySnapshot = await getDocs(collection(db, "users"));
 
-    querySnapshot.forEach((doc) => {
-      const {NickName, playedGames, points, rank, ONplayedGames, ONpoints, ONrank, UID} = doc.data();
-      users.push({
-        id: doc.id,
-        NickName,
-        playedGames,
-        points,
-        rank,
-        ONplayedGames,
-        ONpoints,
-        ONrank,
-        UID,
-      });
+    querySnapshot.forEach((user) => {
+      const sub = onSnapshot(doc(db, "users", user.data().id), (doc) => {
+        const {NickName, playedGames, points, rank, ONplayedGames, ONpoints, ONrank, UID} = doc.data();
+        users.push({
+          id: doc.id,
+          NickName,
+          playedGames,
+          points,
+          rank,
+          ONplayedGames,
+          ONpoints,
+          ONrank,
+          UID,
+        });
     });
+  });
   console.log(users);
 }
-
-getUsers();
 
 export default users;

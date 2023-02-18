@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "light-blue",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -34,6 +34,10 @@
       "eas": {
         "projectId": "6c39ec56-2638-4a69-ae7a-afed84e1ebf3"
       }
+    },
+    "packagerOpts": {
+      "config": "metro.config.js",
+      "sourceExts": ["js", "jsx", "css"]
     }
   }
 }

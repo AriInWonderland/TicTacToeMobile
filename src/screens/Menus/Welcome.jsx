@@ -3,18 +3,17 @@ import React, { useEffect, useState } from 'react'
 
 import { collection, addDoc, getDoc, getDocs} from "firebase/firestore"; 
 import db from "../../../database/firebase"
-import { async } from '@firebase/util';
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import  AsyncStorage  from '@react-native-async-storage/async-storage';
+
+import style from '../../App.css';
 
 const Welcome = ({navigation}) => { 
-
-    const map = [gameMap, setMap] = useState([
-        ['', '', ''],
-        ['', '', ''],
-        ['', '', ''],
-    ]);
+    const [val, setVal] = useState('');
+    const [val1, setVal1] = useState('');
+    const [val2, setVal2] = useState('');
+    const [val3, setVal3] = useState('');
 
     const [newUser, setState] = useState({
         email: "",
@@ -52,6 +51,10 @@ const Welcome = ({navigation}) => {
                         const user = userCredential.user;
                         console.log("[addUser]Creating user doc...");
                         createUserDoc();
+                        setVal('');
+                        setVal1('');
+                        setVal2('');
+                        setVal3('');
                         navigation.navigate("Logged_In");
                     })
                     .catch((error) => {
@@ -81,96 +84,49 @@ const Welcome = ({navigation}) => {
     }
 
    return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Please create an account or log-in!!!</Text>
+        <View style={style.container}>
+            <Text style={style.title}>Please create an account or log-in!!!</Text>
 
             <TextInput 
-                style={styles.txtinput} 
+                style={style.txtinput} 
                 placeholder="Email"
-                onChangeText = {(value) => {inputHandler("email", value)}}
+                value = {val}
+                onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
             />
             <TextInput 
-                style={styles.txtinput} 
+                style={style.txtinput} 
                 placeholder="NickName"
-                onChangeText = {(value) => {inputHandler("nick", value)}}
+                value = {val1}
+                onChangeText = {(value) => {inputHandler("nick", value); setVal1(value)}}
             />  
             <TextInput 
-                style={styles.txtinput} 
+                style={style.txtinput} 
                 placeholder="Password"
-                onChangeText={(value) => inputHandler("password", value)}
+                value = {val2}
+                onChangeText={(value) => {inputHandler("password", value); setVal2(value)}}
                 secureTextEntry ={true}
             /> 
             <TextInput 
-                style={styles.txtinput} 
+                style={style.txtinput} 
                 placeholder="Verify Password"
-                onChangeText={(value) => inputHandler("verify", value)}
+                value = {val3}
+                onChangeText={(value) => {inputHandler("verify", value); setVal3(value)}}
                 secureTextEntry = {true}
             /> 
 
-            <Text style={styles.createbt} onPress = {() => addUser()}>Create!!!</Text>
-            <Text style={[styles.title, styles.subtitle]}>Already have an account?</Text>
-            <Text style={styles.loginbt } onPress = {() => navigation.navigate("LogIn")}>Log in</Text>
-
-            <Text style={styles.loginbt } onPress = {() => navigation.navigate("Ranks")}>[RankDEBUG]</Text>
-            <Text style={styles.loginbt } onPress = {() => mapTest()}>[DEBUG]</Text>
+            <Text style={style.button} onPress = {() => addUser()}>Create!!!</Text>
+            <Text style={[style.title, style.subtitle]}>Already have an account?</Text>
+            <Text style={[style.button, {
+                width: '35%',
+                fontSize: 20, 
+            }]} onPress = {() => {
+                                                            navigation.navigate("LogIn");
+                                                            setVal('');
+                                                            setVal1('');
+                                                            setVal2('');
+                                                            setVal3('');
+                                                        }}>Log in</Text>
         </View> 
     )
 }
-
-const styles = StyleSheet.create({
-    container:{
-        backgroundColor: '#6eff',
-        flex: 1,
-        alignItems: 'center',
-    },
-    title:{
-        top: "15%",
-        fontSize: 50,
-        fontStyle: 'italic',
-        textAlign: 'center',
-        color: 'white',
-    },
-    subtitle:{
-        margin: 10,
-        top: "26%",
-        fontSize: 16,
-        color: 'white',
-    },
-    txtinput:{
-        color: 'white', 
-        borderColor: 'white',
-        top: "25%",
-        borderWidth: 1,
-        padding: 15,
-        borderRadius: 50,
-        width: 350,
-        fontSize: 24,
-        margin: 15,
-    },
-    createbt:{
-        flexDirection: 'column',
-        backgroundColor: '#2f1a3b',
-        color: 'white',
-        margin: 10,
-        textAlign: 'center',
-        fontSize: 26,
-        padding: 10,
-        top: '25%',
-        width: "50%",
-        borderRadius: 50,  
-    },
-    loginbt:{
-        flexDirection: 'column',
-        backgroundColor: '#2f1a3b',
-        color: 'white',
-        margin: 10,
-        textAlign: 'center',
-        fontSize: 20,
-        padding: 10,
-        top: '25%',
-        width: "40%",
-        borderRadius: 50,   
-    },
-})
-
 export default Welcome;

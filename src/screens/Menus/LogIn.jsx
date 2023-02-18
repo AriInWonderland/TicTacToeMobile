@@ -1,10 +1,12 @@
-import { View, Text, StyleSheet, TextInput } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import   AsyncStorage                 from "@react-native-async-storage/async-storage";
     
 const LogIn = ({navigation}) => {
+    const [val, setVal] = useState('');
+    const [val1, setVal1] = useState('');
     const [User, setState] = useState({
         email: "",
         passwd: "",
@@ -20,12 +22,33 @@ const LogIn = ({navigation}) => {
             .then((userCredential) => {
                 //Signed in!!!
                 const user = userCredential.user;
+                User.email = "";
+                User.passwd = "";
+                setVal('');
+                setVal1('');
                 navigation.navigate("Logged_In");
             })
             .catch((error) => {
                 console.error(error.code)
                 console.error(error.message)
             });
+    }
+
+    const resetPassword = () => {
+        const auth = getAuth();
+        if(!User.email){
+            Alert.alert("Please input your email first!");
+            return;
+        }
+        sendPasswordResetEmail(auth, User.email)
+            .then(() => {Alert.alert("You can now check your inbox!")})
+            .catch((error)=>{
+                const errorCode = error.code;
+                const errorMessage = error.message;
+
+                Alert.alert("Sorry!!!",
+                            error.message);
+            })
     }
 
   return (
@@ -35,16 +58,21 @@ const LogIn = ({navigation}) => {
         <TextInput 
             style={styles.txtinput} 
             placeholder="Email"
-            onChangeText = {(value) => {inputHandler("email", value)}}
+            value = {val}
+            onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
         /> 
         <TextInput 
             style={styles.txtinput} 
             placeholder="Password"
-            onChangeText={(value) => inputHandler("passwd", value)}
+            value = {val1}
+            onChangeText={(value) => {inputHandler("passwd", value); setVal1(value)}}
             secureTextEntry ={true}
         /> 
 
-        <Text style={styles.createbt} onPress = {() => logIn()} >Log me in!!!</Text>
+        <Text style={styles.subtitle} onPress= {() => resetPassword()}>Forgot password?</Text>
+        <Text style={styles.createbt} onPress = {() => {
+                                                        logIn();
+                                                        }} >Log me in!!!</Text>
     </View>
   )
 }
@@ -63,10 +91,13 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     subtitle:{
-        margin: 10,
+        margin: 4,
         top: "26%",
-        fontSize: 16,
+        fontSize: 20,
+        fontStyle: 'italic',
+        textDecorationStyle: 'dashed',
         color: 'white',
+        textDecorationLine: 'underline',
     },
     txtinput:{
         color: 'white', 

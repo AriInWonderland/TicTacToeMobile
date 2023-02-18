@@ -1,11 +1,23 @@
 import { View, Text, StyleSheet} from 'react-native'
 import React from 'react'
-
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
-
-import logOut from "../../../Users"
+import { getAuth, signOut } from 'firebase/auth';
 
 const Logged = ({navigation}) => {
+  const logOut = () =>{
+    console.log("log out");
+    const auth = getAuth();
+    console.log("Auth = ", auth)
+    signOut(auth)
+      .then(() =>{
+        navigation.popToTop();
+      }).catch((error) =>{
+        console.log(error.code);
+        console.log(error.Message);
+        alert("An error occured while logging out...");
+      });
+  }
+
   return (
     <View style={styles.container}>
         
