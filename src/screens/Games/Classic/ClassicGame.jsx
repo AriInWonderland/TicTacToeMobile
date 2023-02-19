@@ -26,7 +26,7 @@ usando Array.from(mapa)
 import { StatusBar } from 'expo-status-bar';
 import React, {useEffect, useState} from "react";
 import { StyleSheet, Text, View, ImageBackground, Alert } from 'react-native';
-import bg from "../../../../assets/bg.jpeg";
+import bg from "../../../../assets/bg.png";
 import Cell from "../../../GeneralAssets/Cell"
 
 export default function Classic_Game({route, navigation}) {
