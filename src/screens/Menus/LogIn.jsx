@@ -1,12 +1,21 @@
 import { View, Text, StyleSheet, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import   AsyncStorage                 from "@react-native-async-storage/async-storage";
+
+import * as SecureStore from 'expo-secure-store';
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 
 import style from "../../App.css";
     
+import { getValueFor, save } from '../../../Users';
+
+
 const LogIn = ({navigation}) => {
+    const [userName, onChangeName] = React.useState('Your value here');
+    const [userPass, onChangePass] = React.useState('Your value here');
+    const key1 = "email";
+    const key2 = "password"
+    //Aca directamente te logea si tenes guardado tu login en el cache
     const [val, setVal] = useState('');
     const [val1, setVal1] = useState('');
     const [User, setState] = useState({
@@ -20,15 +29,21 @@ const LogIn = ({navigation}) => {
 
     const auth = getAuth();
     const logIn = () => {
+        onChangeName(User.email);
+        onChangePass(User.passwd);
         signInWithEmailAndPassword(auth, User.email, User.passwd)
             .then((userCredential) => {
                 //Signed in!!!
+                onChangeName(User.email);
+                onChangePass(User.passwd);
+                save(key1, userName)
+                save(key2, userPass)
                 const user = userCredential.user;
                 User.email = "";
                 User.passwd = "";
                 setVal('');
                 setVal1('');
-                navigation.navigate("Logged_In");
+                navigation.navigate("WaitingScreen");
             })
             .catch((error) => {
                 console.error(error.code)
@@ -62,7 +77,7 @@ const LogIn = ({navigation}) => {
             placeholder="Email"
             placeholderTextColor="#f0f8ff81"
             value = {val}
-            onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
+            onChangeText = {(value) => {inputHandler("email", value); setVal(value);}}
         /> 
         <TextInput 
             style={style.txtinput} 

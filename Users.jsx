@@ -6,11 +6,27 @@ import {React, useEffect, useState} from "react";
 import db from "./database/firebase";
 import { collection, addDoc, getDoc, getDocs, onSnapshot, doc} from "firebase/firestore"; 
 
-import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { onAuthStateChanged } from "firebase/auth";
 import { StackActions } from '@react-navigation/native';
+import * as SecureStore from 'expo-secure-store';
 
 const users = [];
+
+export async function save(key, value) {
+  await SecureStore.setItemAsync(key, value);
+}
+
+export async function getValueFor(key) {
+  let result = await SecureStore.getItemAsync(key);
+  console.log("Looking for saved creentials...");
+  if (result != undefined) {
+    console.log(result);
+    return result;
+  } else {
+    console.log('No values stored under that key.');
+    return undefined;
+  }
+}
 
 function getActualUserDoc (authenticate, UsersArray){
   var uid;

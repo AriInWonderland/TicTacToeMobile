@@ -2,6 +2,7 @@ import { View, Text, StyleSheet} from 'react-native'
 import React from 'react'
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
 import { getAuth, signOut } from 'firebase/auth';
+import * as SecureStore from 'expo-secure-store';
 
 const Logged = ({navigation}) => {
   const logOut = () =>{
@@ -10,6 +11,8 @@ const Logged = ({navigation}) => {
     console.log("Auth = ", auth)
     signOut(auth)
       .then(() =>{
+        SecureStore.deleteItemAsync("email");
+        SecureStore.deleteItemAsync("password");
         navigation.popToTop();
       }).catch((error) =>{
         console.log(error.code);

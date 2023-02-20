@@ -3,18 +3,27 @@ import React, { useEffect, useState } from 'react'
 
 import { collection, addDoc, getDoc, getDocs} from "firebase/firestore"; 
 import db from "../../../database/firebase"
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 
-import  {AsyncStorage}  from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 import style from '../../App.css';
+import { getValueFor, save } from '../../../Users';
 
 const Welcome = ({navigation}) => { 
+    let user;
+    let pass;
+    useEffect(() => {
+        user = getValueFor("email"); 
+        pass = getValueFor("password"); 
+    }, [])
+    const auth = getAuth();
     const [val, setVal] = useState('');
     const [val1, setVal1] = useState('');
     const [val2, setVal2] = useState('');
-    const [val3, setVal3] = useState('');
-
+    const [val3, setVal3] = useState(''); 
+    const [userName, onChangeName] = React.useState('Your value here');
+    const [userPass, onChangePass] = React.useState('Your value here');
     const [newUser, setState] = useState({
         email: "",
         nick: "",
@@ -43,14 +52,14 @@ const Welcome = ({navigation}) => {
         if(newUser.email && newUser.nick && check){
             console.log("All checks passed");
                 console.log("Trying to create user...");
-                const auth = getAuth();
-                console.log("Got auth...");
                 createUserWithEmailAndPassword(auth, newUser.email, newUser.password)
                     .then((userCredential) => {
                         console.log("Logging in...");
                         const user = userCredential.user;
                         console.log("[addUser]Creating user doc...");
                         createUserDoc();
+                        save('email', newUser.email);
+                        save('password', newUser.password);
                         setVal('');
                         setVal1('');
                         setVal2('');
@@ -92,8 +101,8 @@ const Welcome = ({navigation}) => {
                 placeholder="Email"
                 placeholderTextColor="#f0f8ff81"
                 value = {val}
-                onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
-            />
+                onChangeText = {(value) => {inputHandler("email", value);setVal(value);}}
+   />
             <TextInput 
                 style={style.txtinput} 
                 placeholder="NickName"
@@ -120,15 +129,32 @@ const Welcome = ({navigation}) => {
 
             <Text style={style.button} onPress = {() => addUser()}>Create!!!</Text>
             <Text style={[style.title, style.subtitle]}>Already have an account?</Text>
+   
             <Text style={[style.button, {
                 width: '35%',
                 fontSize: 20, 
             }]} onPress = {() => {
-                                                            navigation.navigate("LogIn");
-                                                            setVal('');
-                                                            setVal1('');
-                                                            setVal2('');
-                                                            setVal3('');
+                                                            console.log(user._z);
+                                                            if(user != undefined){
+                                                                console.log("UserExists");
+                                                                signInWithEmailAndPassword(auth, user._z, pass._z)
+                                                                    .then((userCredential) =>{
+                                                                        console.log("Logged in!!!");
+                                                                        console.log(userCredential.user);
+                                                                        navigation.navigate("WaitingScreen");
+                                                                    })
+                                                                    .catch((error) =>{
+                                                                        console.log(error.code);
+                                                                        console.log(error.message);
+                                                                    });
+                                                            }
+                                                            else{
+                                                                navigation.navigate("LogIn");
+                                                                setVal('');
+                                                                setVal1('');
+                                                                setVal2('');
+                                                                setVal3('');
+                                                            }
                                                         }}>Log in</Text>
         </View> 
     )
