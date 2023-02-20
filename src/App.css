@@ -34,8 +34,8 @@
 }
 .button{
     flex-direction: column;
-    background-color: #2f1a3b;
-    color: white;
+    background-color: aliceblue;
+    color: #1f0019;
     margin: 10px;
     text-align: center;
     font-size: 26;
