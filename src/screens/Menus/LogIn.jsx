@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react'
 
 import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import   AsyncStorage                 from "@react-native-async-storage/async-storage";
+
+import style from "../../App.css";
     
 const LogIn = ({navigation}) => {
     const [val, setVal] = useState('');
@@ -52,25 +54,27 @@ const LogIn = ({navigation}) => {
     }
 
   return (
-    <View style={styles.container}>
-        <Text style={styles.title}>Please input your username and password!!!</Text>
+    <View style={style.container}>
+        <Text style={style.title}>Please input your username and password!!!</Text>
 
         <TextInput 
-            style={styles.txtinput} 
+            style={style.txtinput} 
             placeholder="Email"
+            placeholderTextColor="#f0f8ff81"
             value = {val}
             onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
         /> 
         <TextInput 
-            style={styles.txtinput} 
+            style={style.txtinput} 
             placeholder="Password"
+            placeholderTextColor="#f0f8ff81"
             value = {val1}
             onChangeText={(value) => {inputHandler("passwd", value); setVal1(value)}}
             secureTextEntry ={true}
         /> 
 
-        <Text style={styles.subtitle} onPress= {() => resetPassword()}>Forgot password?</Text>
-        <Text style={styles.createbt} onPress = {() => {
+        <Text style={style.link_like} onPress= {() => resetPassword()}>Forgot password?</Text>
+        <Text style={style.button} onPress = {() => {
                                                         logIn();
                                                         }} >Log me in!!!</Text>
     </View>

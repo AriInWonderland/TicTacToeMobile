@@ -17,8 +17,14 @@
     color: aliceblue;
     top: 26%
 }
-.link_like{
-    font-size: 16;
+.link_like{ 
+    color: aliceblue;
+    margin: 6px;
+    top: 25%;
+    font-size: 20;
+    font-style: italic;
+    text-align: right;
+    text-decoration: underline;
 }
 
 .txtinput{
