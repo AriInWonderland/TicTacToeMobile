@@ -5,7 +5,7 @@ import { collection, addDoc, getDoc, getDocs} from "firebase/firestore";
 import db from "../../../database/firebase"
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
-import  AsyncStorage  from '@react-native-async-storage/async-storage';
+import  {AsyncStorage}  from '@react-native-async-storage/async-storage';
 
 import style from '../../App.css';
 
@@ -90,18 +90,21 @@ const Welcome = ({navigation}) => {
             <TextInput 
                 style={style.txtinput} 
                 placeholder="Email"
+                placeholderTextColor="#f0f8ff81"
                 value = {val}
                 onChangeText = {(value) => {inputHandler("email", value); setVal(value)}}
             />
             <TextInput 
                 style={style.txtinput} 
                 placeholder="NickName"
+                placeholderTextColor="#f0f8ff81"
                 value = {val1}
                 onChangeText = {(value) => {inputHandler("nick", value); setVal1(value)}}
             />  
             <TextInput 
                 style={style.txtinput} 
                 placeholder="Password"
+                placeholderTextColor="#f0f8ff81"
                 value = {val2}
                 onChangeText={(value) => {inputHandler("password", value); setVal2(value)}}
                 secureTextEntry ={true}
@@ -109,6 +112,7 @@ const Welcome = ({navigation}) => {
             <TextInput 
                 style={style.txtinput} 
                 placeholder="Verify Password"
+                placeholderTextColor="#f0f8ff81"
                 value = {val3}
                 onChangeText={(value) => {inputHandler("verify", value); setVal3(value)}}
                 secureTextEntry = {true}

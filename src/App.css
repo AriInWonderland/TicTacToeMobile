@@ -1,5 +1,5 @@
 .container{
-    background-color: aqua;
+    background-color: #1f0019;
     flex: 1;
     align-items: center;
 }
@@ -22,7 +22,7 @@
 }
 
 .txtinput{
-    color: aliceblue;
+    color: #f0f8ff;
     border-color: aliceblue;
     top: 25%;
     padding: 15px;
