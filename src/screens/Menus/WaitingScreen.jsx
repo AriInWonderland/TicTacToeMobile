@@ -2,15 +2,22 @@ import { View, Text} from "react-native";
 
 import { useEffect, useState } from "react";
 
-import { getUsers, users } from '../../../Users';
+import users from '../../../Users';
+import {getUsers} from '../../../Users';
 import style from '../../App.css';
 
 export default function WaitingScreen ({navigation}){
     const [time, setTime] = useState(0);
+    getUsers();
     useEffect(() => {
         setTimeout(() => {
             console.log("Checking...");
-            //setTime(time + 1);
+            if(users.length > 0){
+                console.log(users);
+                navigation.navigate("Logged_In");
+            } else {
+                setTime(time + 1);
+            }
         }, 50);
     }, [time])
 

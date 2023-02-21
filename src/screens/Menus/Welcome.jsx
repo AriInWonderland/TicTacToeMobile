@@ -134,7 +134,14 @@ const Welcome = ({navigation}) => {
                 width: '35%',
                 fontSize: 20, 
             }]} onPress = {() => {
-                                    if(user != undefined){
+                                    if(user === "XXXXXX"){
+                                        navigation.navigate("LogIn");
+                                        setVal('');
+                                        setVal1('');
+                                        setVal2('');
+                                        setVal3(''); 
+                                    }
+                                    else{
                                         signInWithEmailAndPassword(auth, user._z, pass._z)
                                             .then((userCredential) =>{
                                                 navigation.navigate("WaitingScreen");
@@ -143,14 +150,7 @@ const Welcome = ({navigation}) => {
                                                 console.log(error.code);
                                                 console.log(error.message);
                                             });
-                                    }
-                                    else{
-                                        navigation.navigate("LogIn");
-                                        setVal('');
-                                        setVal1('');
-                                        setVal2('');
-                                        setVal3('');
-                                    }
+                                   }
                                 }}>Log in</Text>
         </View> 
     )

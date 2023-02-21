@@ -11,8 +11,6 @@ import { getValueFor, save } from '../../../Users';
 
 
 const LogIn = ({navigation}) => {
-    const [userName, onChangeName] = React.useState('Your value here');
-    const [userPass, onChangePass] = React.useState('Your value here');
     const key1 = "email";
     const key2 = "password"
     //Aca directamente te logea si tenes guardado tu login en el cache
@@ -34,10 +32,8 @@ const LogIn = ({navigation}) => {
         signInWithEmailAndPassword(auth, User.email, User.passwd)
             .then((userCredential) => {
                 //Signed in!!!
-                onChangeName(User.email);
-                onChangePass(User.passwd);
-                save(key1, userName)
-                save(key2, userPass)
+                save(key1, User.email);
+                save(key2, User.passwd);
                 const user = userCredential.user;
                 User.email = "";
                 User.passwd = "";

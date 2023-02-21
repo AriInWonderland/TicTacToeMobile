@@ -13,19 +13,14 @@ import * as SecureStore from 'expo-secure-store';
 const users = [];
 
 export async function save(key, value) {
+  console.log("Saving " + value + " as " + key);
   await SecureStore.setItemAsync(key, value);
 }
 
 export async function getValueFor(key) {
   let result = await SecureStore.getItemAsync(key);
-  console.log("Looking for saved creentials...");
-  if (result != undefined) {
-    console.log(result);
-    return result;
-  } else {
-    console.log('No values stored under that key.');
-    return undefined;
-  }
+  console.log("Result: ", result);
+  return result;
 }
 
 function getActualUserDoc (authenticate, UsersArray){
@@ -46,28 +41,29 @@ function getActualUserDoc (authenticate, UsersArray){
   return Doc;
 }
 
-async function getUsers() {
-    console.log("Retrieving users...");
-
+export async function getUsers() {
     const querySnapshot = await getDocs(collection(db, "users"));
+    while(users.length > 0)
+        users.pop(); 
 
     querySnapshot.forEach((user) => {
-      const sub = onSnapshot(doc(db, "users", user.data().id), (doc) => {
-        const {NickName, playedGames, points, rank, ONplayedGames, ONpoints, ONrank, UID} = doc.data();
-        users.push({
-          id: doc.id,
-          NickName,
-          playedGames,
-          points,
-          rank,
-          ONplayedGames,
-          ONpoints,
-          ONrank,
-          UID,
-        });
+      const {NickName, playedGames, points, rank, ONplayedGames, ONpoints, ONrank, UID} = user.data();
+      users.push({
+        id: doc.id,
+        NickName,
+        playedGames,
+        points,
+        rank,
+        ONplayedGames,
+        ONpoints,
+        ONrank,
+        UID,
+      });
+
+      /*const sub = onSnapshot(doc(db, "users", user.data().id), (docData) => {
+
+      })*/
     });
-  });
-  console.log(users);
 }
 
 export default users;
