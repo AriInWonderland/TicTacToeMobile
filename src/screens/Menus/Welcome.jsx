@@ -134,28 +134,24 @@ const Welcome = ({navigation}) => {
                 width: '35%',
                 fontSize: 20, 
             }]} onPress = {() => {
-                                                            console.log(user._z);
-                                                            if(user != undefined){
-                                                                console.log("UserExists");
-                                                                signInWithEmailAndPassword(auth, user._z, pass._z)
-                                                                    .then((userCredential) =>{
-                                                                        console.log("Logged in!!!");
-                                                                        console.log(userCredential.user);
-                                                                        navigation.navigate("WaitingScreen");
-                                                                    })
-                                                                    .catch((error) =>{
-                                                                        console.log(error.code);
-                                                                        console.log(error.message);
-                                                                    });
-                                                            }
-                                                            else{
-                                                                navigation.navigate("LogIn");
-                                                                setVal('');
-                                                                setVal1('');
-                                                                setVal2('');
-                                                                setVal3('');
-                                                            }
-                                                        }}>Log in</Text>
+                                    if(user != undefined){
+                                        signInWithEmailAndPassword(auth, user._z, pass._z)
+                                            .then((userCredential) =>{
+                                                navigation.navigate("WaitingScreen");
+                                            })
+                                            .catch((error) =>{
+                                                console.log(error.code);
+                                                console.log(error.message);
+                                            });
+                                    }
+                                    else{
+                                        navigation.navigate("LogIn");
+                                        setVal('');
+                                        setVal1('');
+                                        setVal2('');
+                                        setVal3('');
+                                    }
+                                }}>Log in</Text>
         </View> 
     )
 }
