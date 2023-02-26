@@ -1,10 +1,16 @@
-import { View, Text, StyleSheet} from 'react-native'
+import { View, Text, Alert } from 'react-native'
 import React from 'react'
 import { AsyncStorage } from '@react-native-async-storage/async-storage';
-import { getAuth, signOut } from 'firebase/auth';
+import { getAuth, signOut, onAuthStateChanged } from 'firebase/auth';
 import * as SecureStore from 'expo-secure-store';
+import {useEffect} from 'react';
+
+import style from '../../App.css'
+import {actualDoc, getActualUserDoc} from '../../../Users';
 
 const Logged = ({navigation}) => {
+  getActualUserDoc();
+
   const logOut = () =>{
     console.log("log out");
     const auth = getAuth();
@@ -22,63 +28,36 @@ const Logged = ({navigation}) => {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={style.container}>
         
-      <Text style={styles.title}>
+      <Text style={style.title}>
         You have successfully logged into Tic-Tac-Toe_Mobile!
       </Text>
 
-      <Text style = {styles.button} onPress = {() => {navigation.navigate('Select_Game_Mode'); console.log("Play");}}>
+      <Text style = {[style.button, style.bt]} onPress = {() => {navigation.navigate('Select_Game_Mode'); console.log("Play");}}>
         Play!
       </Text>
 
-      <Text style = {styles.button} onPress = {() => console.log("Skins")}>
+      <Text style = {[style.button, style.bt]} onPress = {() => Alert.alert("Sorry but his feature isn't ready yet.")}>
         Skins
       </Text>
 
-      <Text style = {styles.button} onPress = {() => navigation.navigate("UserDetails")}>
+      <Text style={[style.button, style.bt]}>
+        Offline Ranks
+      </Text>
+
+      <Text style={[style.button, style.bt]}>
+        Online Ranks
+      </Text>
+
+      <Text style = {[style.button, style.bt]} onPress = {() => navigation.navigate("UserDetails", {doc: actualDoc})}>
         Account
       </Text>
 
-      <Text style = {styles.subtitle} onPress = {() => logOut()}>
+      <Text style = {style.link_like} onPress = {() => logOut()}>
         LogOut
       </Text>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container:{
-    backgroundColor: '#6e3d8b', 
-    flex: 1,
-    alignItems: 'center',
-  },
-  title:{
-    top: "20%",
-    fontSize: 50,
-    fontStyle: 'italic',
-    textAlign: 'center',
-    color: 'white',
-  },
-  button:{
-    flexDirection: 'column',
-    backgroundColor: '#2f1a3b',
-    color: 'white',
-    margin: 20,
-    textAlign: 'center',
-    fontSize: 26,
-    padding: 10,
-    top: 300,
-    width: "50%",
-    borderRadius: 50, 
-  },
-  subtitle:{
-    margin: 10,
-    top: "40%",
-    fontSize: 16,
-    color: 'white',
-    textDecorationLine: 'underline',
-  },
-})
-
 export default Logged;

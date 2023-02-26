@@ -4,41 +4,45 @@ actualiza esto el ganador, todos se suscriben al resto de docs con onSnapshot
 
 import {React, useEffect, useState} from "react";
 import db from "./database/firebase";
-import { collection, addDoc, getDoc, getDocs, onSnapshot, doc} from "firebase/firestore"; 
+import { collection, getDocs, doc, onSnapshot} from "firebase/firestore"; 
 
-import { onAuthStateChanged } from "firebase/auth";
-import { StackActions } from '@react-navigation/native';
+import { onAuthStateChanged, getAuth } from "firebase/auth";
 import * as SecureStore from 'expo-secure-store';
 
 const users = [];
+export const actualDoc = [];
 
 export async function save(key, value) {
-  console.log("Saving " + value + " as " + key);
   await SecureStore.setItemAsync(key, value);
 }
 
 export async function getValueFor(key) {
   let result = await SecureStore.getItemAsync(key);
-  console.log("Result: ", result);
   return result;
 }
 
-function getActualUserDoc (authenticate, UsersArray){
-  var uid;
-  var Doc;
-  onAuthStateChanged(authenticate, (user) => {
-    if(user){
-      uid = user.UID;
+//usar async para forzar que espere la fiunciopn esta
+export function getActualUserDoc(){
+  while(actualDoc.length > 0)
+    actualDoc.pop();
+  const auth = getAuth();
+  onAuthStateChanged(auth,(player)=>{ 
+    users.forEach((user)=>{
+        if(user.UID == player.uid){
+          actualDoc.push(user);
+        }
+      })
+  }) 
+  return;
+}
+
+export function getUser(auth, uid){
+  users.forEach((user)=>{
+    if(user.UID == uid){
+      console.log("Got user");
+      return user;
     }
-  });
-  UsersArray.forEach((user) => {
-    if(uid == user.UID){
-      Doc = user;
-    }
-  });
-  //necesito el doc
-  console.log(Doc);
-  return Doc;
+  })
 }
 
 export async function getUsers() {

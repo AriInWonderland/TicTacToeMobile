@@ -11,7 +11,7 @@ import Welcome       from './src/screens/Menus/Welcome'            ;
 import Ranks         from './src/screens/Menus/Ranks'              ;
 import Logged        from './src/screens/Menus/Logged'             ;
 import GameMode      from "./src/screens/Menus/GameMode"           ;
-import ClassicMenu   from "./src/screens/Games/Classic/ClassicMenu";
+import PvEMenu   from "./src/screens/Games/Classic/PvEMenu";
 import Classic_Game  from "./src/screens/Games/Classic/ClassicGame";
 import UserDetails   from "./src/screens/Menus/UserDetails"        ;
 import LogIn         from "./src/screens/Menus/LogIn"              ;
@@ -36,8 +36,8 @@ const MyStack = () =>{
       options = {{headerShown: false}}
     />
     <Stack.Screen
-      name="Classic_Menu"
-      component={ClassicMenu}
+      name="PvEMenu"
+      component={PvEMenu}
       options = {{headerShown: false}}
     />
     <Stack.Screen

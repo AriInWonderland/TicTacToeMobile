@@ -2,18 +2,17 @@ import { View, Text} from "react-native";
 
 import { useEffect, useState } from "react";
 
-import users from '../../../Users';
+import users, { acutalDoc, getActualUserDoc } from '../../../Users';
 import {getUsers} from '../../../Users';
 import style from '../../App.css';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 export default function WaitingScreen ({navigation}){
     const [time, setTime] = useState(0);
     getUsers();
     useEffect(() => {
         setTimeout(() => {
-            console.log("Checking...");
             if(users.length > 0){
-                console.log(users);
                 navigation.navigate("Logged_In");
             } else {
                 setTime(time + 1);

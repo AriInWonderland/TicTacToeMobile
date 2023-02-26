@@ -79,6 +79,10 @@ const Welcome = ({navigation}) => {
         try{
             const docRef = await addDoc(collection(db, "users"), {
                 NickName: newUser.nick,
+                ONwinRate: -1,
+                winRate: -1,
+                wins: 0,
+                ONwins: 0,
                 ONplayedGames: 0,
                 ONpoints: 0,
                 ONrank: -1,
