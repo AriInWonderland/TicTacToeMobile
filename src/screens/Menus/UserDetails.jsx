@@ -16,8 +16,8 @@ wins / total games * 100
 export default function Ranks({route, navigation}) {
 //Agarra un doc cualquiera como argumento o la id de quien es para permitir ver otods los docs
     const doc = route.params;
+    console.log(doc.doc[0]);
     const player = doc.doc[0];
-    console.log(player);
     return(
         <View style={style.container}>
             <View style={style.card}>

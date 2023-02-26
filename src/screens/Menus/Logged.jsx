@@ -6,11 +6,9 @@ import * as SecureStore from 'expo-secure-store';
 import {useEffect} from 'react';
 
 import style from '../../App.css'
-import {actualDoc, getActualUserDoc} from '../../../Users';
+import users, {actualDoc, getActualUserDoc} from '../../../Users';
 
 const Logged = ({navigation}) => {
-  getActualUserDoc();
-
   const logOut = () =>{
     console.log("log out");
     const auth = getAuth();
@@ -42,11 +40,11 @@ const Logged = ({navigation}) => {
         Skins
       </Text>
 
-      <Text style={[style.button, style.bt]}>
+      <Text style={[style.button, style.bt]} onPress= {() =>{ console.log(users); console.log(users.length)}}>
         Offline Ranks
       </Text>
 
-      <Text style={[style.button, style.bt]}>
+      <Text style={[style.button, style.bt]} onPress = {() =>{console.log(actualDoc); console.log(actualDoc.length)}}>
         Online Ranks
       </Text>
 

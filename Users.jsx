@@ -4,7 +4,7 @@ actualiza esto el ganador, todos se suscriben al resto de docs con onSnapshot
 
 import {React, useEffect, useState} from "react";
 import db from "./database/firebase";
-import { collection, getDocs, doc, onSnapshot} from "firebase/firestore"; 
+import { collection, getDocs, query, onSnapshot} from  "firebase/firestore"; 
 
 import { onAuthStateChanged, getAuth } from "firebase/auth";
 import * as SecureStore from 'expo-secure-store';
@@ -33,6 +33,7 @@ export function getActualUserDoc(){
         }
       })
   }) 
+  console.log("Got actual user");
   return;
 }
 
@@ -46,10 +47,22 @@ export function getUser(auth, uid){
 }
 
 export async function getUsers() {
-    const querySnapshot = await getDocs(collection(db, "users"));
+    //const querySnapshot = await getDocs(collection(db, "users"));
     while(users.length > 0)
         users.pop(); 
-
+    
+    const q = query(collection(db,"users"));
+    const unsubscribe = onSnapshot(q, (querySnap)=>{
+      while(users.length > 0)
+          users.pop(); 
+      while(actualDoc.length > 0)
+        actualDoc.pop();
+      querySnap.forEach((doc)=>{
+        users.push(doc.data());
+      });
+      getActualUserDoc();
+    });
+    /* esta es la "original"
     querySnapshot.forEach((user) => {
       const {NickName, playedGames, points, rank, ONplayedGames, ONpoints, ONrank, UID} = user.data();
       users.push({
@@ -62,12 +75,12 @@ export async function getUsers() {
         ONpoints,
         ONrank,
         UID,
-      });
+      });*/
 
       /*const sub = onSnapshot(doc(db, "users", user.data().id), (docData) => {
 
       })*/
-    });
+    //});
 }
 
 export default users;
