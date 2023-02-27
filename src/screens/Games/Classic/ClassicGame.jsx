@@ -59,7 +59,7 @@ export default function Classic_Game({route, navigation}) {
   }
 */
   useEffect(() => {
-    if(CurrentTurn === "o" && gameState === "inGame" && GameMode !== "LOCAL")
+    if(gameState === "inGame" && CurrentTurn === "o" && GameMode !== "LOCAL")
       botTurn();
   }, [CurrentTurn]);
   //useEffect ejecuta CALLBACK si es que DEPENDENCIES cambio desde la ultima llamada 
@@ -75,10 +75,8 @@ export default function Classic_Game({route, navigation}) {
           case "LOCAL":
             break;
           case "BOT_EASY":
-            add_points(20);
             break;
           case "BOT_MEDIUM":
-            add_points(50);
             break;
         }
       }
@@ -90,18 +88,13 @@ export default function Classic_Game({route, navigation}) {
     reset();
   }, [GameMode])
 
-  useEffect(() =>{
-    console.log("Game state : " + gameState);
-  })
-
   const mapTouch = (Column, Row) => { 
     if(gameState === "inGame"){
 
       if(gameMap[Column][Row] !== ""){
-        Alert.alert("Sorry but you can't cheat here!"); //Es mas un check que otra cosa
+        //Alert.alert("Sorry but you can't cheat here!"); //Es mas un check que otra cosa
         return;
       }
-
       setMap((existingMap) => {
         const updatedMap = [...existingMap];
         updatedMap [Column][Row] = CurrentTurn;
@@ -141,7 +134,7 @@ const tieCheck = () => { //Checkea si esta todo ocupado, se ejecuta despues de w
 const Tie = () => {
     Alert.alert("It's a tie!", 
     "Sorry, but no one won!", 
-    [{text: "Play again!", onPress:() => reset()},{text: "Ok...", style: "cancel"}], 
+    [{text: "Play again!", onPress:() => reset()}], 
     {cancelable: true});
 }
 //Bot
@@ -259,15 +252,12 @@ const checkWinner = (checkMap) => {
 
 //Crear un boton para resetear cuando aparezca despues de apretar Ok... en winner y tie
   const winner = (who) => { 
-    console.log("winning");
     Alert.alert(
      "The winner is "+who, 
       "Good job!!!", 
-      [{text: "Play again!", onPress:() => {reset(); setState("inGame");}},{text: "Ok...", style: "cancel"}], 
+      [{text: "Play again!", onPress:() => {reset(); setState("inGame");}}], 
       {cancelable: true}); 
-}
-
-  console.log(diff);
+    }
 
   return (
       <View style={styles.container}>
