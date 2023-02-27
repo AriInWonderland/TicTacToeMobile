@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     innercircle:{
         width  : '80%',
         height : '80%',
-        backgroundColor : '#242d34',
+        backgroundColor : '#1f0019',
         borderRadius : 50,
     },
 
